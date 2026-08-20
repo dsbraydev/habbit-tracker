@@ -10,6 +10,11 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "Habitus",
   description: "Build better habits. Become your best self.",
+  appleWebApp: {
+    capable: true,
+    title: "Habitus",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export const viewport: Viewport = {

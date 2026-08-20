@@ -65,7 +65,8 @@ This is a Next.js app, but it must feel like a native mobile app, not a responsi
 
 ## PWA installability
 
-The app must be installable to a phone home screen and launch without browser chrome:
+Implemented — the app installs to a phone home screen and launches without browser chrome:
 
-- A manifest (Next.js's `app/manifest.ts` convention, or `public/manifest.json` if that convention doesn't apply in this Next.js version — verify against `node_modules/next/dist/docs/` per this project's AGENTS.md rule before implementing) with `name`, `short_name`, `theme_color`/`background_color` matched to the dark theme, icons, `display: "standalone"`, and `start_url`.
-- `apple-mobile-web-app-capable` and `apple-touch-icon` meta tags in the root layout for iOS home-screen installs.
+- `app/manifest.ts` (Next.js's built-in convention) — `name`/`short_name` "Habitus", `background_color`/`theme_color` both `#090812` (must stay in sync with `--color-bg`, same as the `viewport` export's `themeColor`), `display: "standalone"`, `start_url: "/"`, one 512×512 icon.
+- `app/icon.tsx` / `app/apple-icon.tsx` — the app icon is **code-generated**, not an external image asset: `next/og`'s `ImageResponse` renders the dumbbell mark (via the shared `lib/app-icon.tsx` component, parameterized by size) on the `accent-from → accent-via → accent-to` gradient. Next.js auto-serves these at stable `/icon` and `/apple-icon` paths and auto-injects the `<link>` tags — no need to reference a hashed/generated URL manually (confirmed the base path works unqueried). Reuse this pattern (a shared sizeable mark component + thin per-size wrapper files) for any future icon needs rather than sourcing external image assets.
+- `appleWebApp` in `app/layout.tsx`'s `metadata` export (`capable: true`, `title: "Habitus"`, `statusBarStyle: "black-translucent"`) — generates the `mobile-web-app-capable` and `apple-mobile-web-app-title`/`-status-bar-style` meta tags. Don't hand-write these tags separately; extend this field instead.
