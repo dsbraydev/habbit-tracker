@@ -1,15 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import { HabitRow } from "@/components/habit-row";
-import { dummyHabits } from "@/lib/dummy-habits";
-
-const initialHabits = dummyHabits.map((habit, index) => ({
-  ...habit,
-  completed: index < 3,
-}));
+import { useHabits } from "@/lib/habits-context";
 
 function getGreeting() {
   const hour = new Date().getHours();
@@ -19,15 +13,7 @@ function getGreeting() {
 }
 
 export default function HomePage() {
-  const [habits, setHabits] = useState(initialHabits);
-
-  function toggleHabit(id: string) {
-    setHabits((prev) =>
-      prev.map((habit) =>
-        habit.id === id ? { ...habit, completed: !habit.completed } : habit
-      )
-    );
-  }
+  const { habits, toggleHabit } = useHabits();
 
   return (
     <div className="flex flex-col gap-6 px-6 pt-[max(2rem,env(safe-area-inset-top))]">
@@ -48,6 +34,7 @@ export default function HomePage() {
           {habits.map((habit) => (
             <HabitRow
               key={habit.id}
+              href={`/edit-habit/${habit.id}`}
               name={habit.name}
               subtitle={habit.subtitle}
               icon={habit.icon}

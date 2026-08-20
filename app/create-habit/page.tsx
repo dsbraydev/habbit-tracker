@@ -1,26 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
-import { TextField } from "@/components/text-field";
-import { IconPicker, iconOptions } from "@/components/icon-picker";
-import { ColorPicker, colorOptions } from "@/components/color-picker";
-import { DaySelector } from "@/components/day-selector";
-import { cn } from "@/lib/cn";
+import { HabitForm, HABIT_FORM_ID } from "@/components/habit-form";
+import { useHabits, type HabitInput } from "@/lib/habits-context";
 
 export default function CreateHabitPage() {
-  const [title, setTitle] = useState("");
-  const [note, setNote] = useState("");
-  const [icon, setIcon] = useState<string>(iconOptions[0].id);
-  const [color, setColor] = useState<string>(colorOptions[0].id);
-  const [days, setDays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
+  const router = useRouter();
+  const { addHabit } = useHabits();
 
-  const SelectedIcon =
-    iconOptions.find((option) => option.id === icon)?.icon ?? iconOptions[0].icon;
-  const badgeClass =
-    colorOptions.find((option) => option.id === color)?.badgeClass ??
-    colorOptions[0].badgeClass;
+  function handleSubmit(input: HabitInput) {
+    addHabit(input);
+    router.push("/home");
+  }
 
   return (
     <div className="flex min-h-dvh flex-col gap-6 bg-bg px-6 pb-8 pt-[max(2rem,env(safe-area-inset-top))]">
@@ -36,53 +29,15 @@ export default function CreateHabitPage() {
           Create Habit
         </h1>
         <button
-          type="button"
+          type="submit"
+          form={HABIT_FORM_ID}
           className="w-10 text-right text-sm font-medium text-accent-via"
         >
           Save
         </button>
       </div>
 
-      <div className="flex justify-center">
-        <div
-          className={cn(
-            "flex h-20 w-20 items-center justify-center rounded-2xl",
-            badgeClass
-          )}
-        >
-          <SelectedIcon className="h-8 w-8" />
-        </div>
-      </div>
-
-      <TextField
-        label="Title"
-        placeholder="Morning Workout"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-      />
-
-      <TextField
-        label="Note"
-        multiline
-        placeholder="e.g. 3 litres of water, run 10 km"
-        value={note}
-        onChange={(event) => setNote(event.target.value)}
-      />
-
-      <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-text-primary">Icon</span>
-        <IconPicker value={icon} onChange={setIcon} />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-text-primary">Color</span>
-        <ColorPicker value={color} onChange={setColor} />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <span className="text-sm font-medium text-text-primary">Days</span>
-        <DaySelector value={days} onChange={setDays} />
-      </div>
+      <HabitForm onSubmit={handleSubmit} />
     </div>
   );
 }

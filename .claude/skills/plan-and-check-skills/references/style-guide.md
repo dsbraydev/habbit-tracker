@@ -20,6 +20,7 @@ Defined as CSS custom properties in Tailwind 4's `@theme` block in `app/globals.
 - `--color-success: #22c55e` — completed/checked state
 - `--color-streak: #f97316` — flame/streak accent
 - `--color-locked: #52525b` — locked/inactive state
+- `--color-danger: #ef4444` — destructive actions only (e.g. delete-habit confirm). Reserved/status color, not part of the swappable brand accent trio — don't reuse it for anything else, same principle as `--color-success`/`--color-streak`.
 
 `--color-bg` must stay in sync with the `themeColor` in `app/layout.tsx`'s `viewport` export — they're two separate places expressing the same value, not derived from each other. Update both together when the palette changes.
 
@@ -50,6 +51,8 @@ Standardize on these recurring patterns instead of inventing new ones per screen
 - **Primary CTA button** — full-width, gradient fill.
 - **Form inputs** — dark, rounded, subtle border.
 - **Milestone/checklist rows** — trailing check icon (achieved) or lock icon (not yet reached).
+- **Habit data + Create/Edit form** — `lib/habits-context.tsx` (`HabitsProvider`, provided at the root layout) is the single in-memory source of truth for the habit list — `useHabits()` gives `habits` plus `toggleHabit`/`addHabit`/`updateHabit`/`deleteHabit`. `components/habit-form.tsx` is the one shared form (title/note/icon/color/days) used by both `/create-habit` and `/edit-habit/[id]` — don't rebuild the form per screen, extend this component instead. `HabitRow`'s `href` prop links a row to its edit screen; omit it for read-only contexts (like History). This context is explicitly temporary scaffolding for the pre-Supabase phase — expect it to be replaced, not extended indefinitely, once real integration starts.
+- **Destructive actions** — a two-tap confirm (button label changes, e.g. "Delete Habit" → "Tap again to confirm delete", plus a Cancel escape) rather than a browser `confirm()` dialog, which would break the in-theme dark UI. See the delete flow in `app/edit-habit/[id]/page.tsx`.
 - **Hero background image** (auth-adjacent screens, e.g. Sign In) — statically `import` the asset directly (works from anywhere in the source tree, e.g. `@/assets/images/...` — it does not need to live in `public/`; verified against this Next.js build's own docs, and it still gets full `next/image` optimization: responsive `srcSet`, modern formats, no layout shift). Render at natural aspect ratio (no `fill`/`object-cover` cropping), anchored to the top of the screen. It's fine to scale it up uniformly (e.g. `w-[150%] max-w-none` with `relative left-1/2 -translate-x-1/2` to re-center it) and let the excess get cropped left/right — the page's outer `overflow-hidden` handles that, so it never causes real page overflow. Add a short `bg-gradient-to-t from-bg to-transparent` at the image's bottom edge so it fades into the solid `--color-bg` rather than cutting off sharply.
 
 ## Mobile app-shell rules

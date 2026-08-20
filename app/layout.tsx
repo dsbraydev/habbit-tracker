@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk } from "next/font/google";
+import { HabitsProvider } from "@/lib/habits-context";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -33,7 +34,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${spaceGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <HabitsProvider>{children}</HabitsProvider>
+      </body>
     </html>
   );
 }
