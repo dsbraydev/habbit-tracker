@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   BookOpen,
   Check,
@@ -8,6 +9,7 @@ import {
   Droplet,
   Dumbbell,
   Flower2,
+  Plus,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 
@@ -123,6 +125,14 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      <Link
+        href="/create-habit"
+        aria-label="Create habit"
+        className="fixed bottom-[calc(5rem+env(safe-area-inset-bottom))] right-6 z-20 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-accent-from via-accent-via to-accent-to text-text-primary shadow-lg shadow-accent-via/50 transition-transform active:scale-95"
+      >
+        <Plus className="h-6 w-6" />
+      </Link>
     </div>
   );
 }
