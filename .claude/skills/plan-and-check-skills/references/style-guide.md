@@ -41,7 +41,7 @@ Font is **Space Grotesk** (`next/font/google`, wired up in `app/layout.tsx` as t
 Standardize on these recurring patterns instead of inventing new ones per screen:
 
 - **Progress ring/gauge** — circular or semi-circular, gradient stroke using the accent tokens, soft glow.
-- **Icon badges** — hexagonal outline per habit category, soft glow, tinted per category.
+- **Icon badges** — rounded-square, solid-tint fill per category (e.g. `bg-accent-from/15 text-accent-from`), not the hexagonal-outline treatment an earlier reference set suggested — confirmed by the actual Home dashboard references, which consistently show solid rounded-square badges. As with the nav, write each item's badge class as a full static string (e.g. a `badgeClass` field per item) — dynamic interpolation won't be picked up by Tailwind. See the habit list in `app/(app)/home/page.tsx` for the reference implementation.
 - **History calendar** — dot-grid, one dot per day, with a completed/partial/missed/today legend.
 - **Progress chart** — gradient-filled line/area chart.
 - **Segmented tabs** — for controls like Create/Edit or Daily/Weekdays/Weekends/Custom.
