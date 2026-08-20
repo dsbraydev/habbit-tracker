@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Dumbbell, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -73,12 +74,12 @@ export default function SignInPage() {
             </button>
           </div>
 
-          <button
-            type="button"
+          <Link
+            href="/home"
             className="self-end text-sm font-medium text-accent-via"
           >
-            Forgot password?
-          </button>
+            Start Testing
+          </Link>
 
           <button
             type="submit"

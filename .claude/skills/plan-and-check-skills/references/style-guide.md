@@ -45,7 +45,7 @@ Standardize on these recurring patterns instead of inventing new ones per screen
 - **History calendar** — dot-grid, one dot per day, with a completed/partial/missed/today legend.
 - **Progress chart** — gradient-filled line/area chart.
 - **Segmented tabs** — for controls like Create/Edit or Daily/Weekdays/Weekends/Custom.
-- **Bottom tab bar** — fixed, 5 items, highlighted active state.
+- **Bottom tab bar** — fixed, 5 items. Each item has its own active color rather than one shared accent, reusing the 5 existing hues (no new tokens): Home → `accent-via`, History → `accent-from`, Streaks → `streak` (matches the flame color used for streaks everywhere else), Stats → `success`, Profile → `accent-to`. Active state = two-stop gradient pill tint (`from-{color}/25 to-{color}/10`) + ambient glow (`shadow-lg shadow-{color}/50`) + a tight icon-level neon glow via `drop-shadow-[0_0_6px_var(--color-{name})]` (follows the icon's silhouette, unlike a box-shadow). Inactive items stay `text-text-secondary`, no glow. Since each item's classes vary by color, write them as full static Tailwind strings per item (e.g. in a `navItems` array) — dynamic string interpolation like `` `text-${color}` `` won't be picked up by Tailwind's compiler. See `components/bottom-nav.tsx` for the reference implementation.
 - **Floating action button** — circular, gradient fill, for primary "add" actions.
 - **Primary CTA button** — full-width, gradient fill.
 - **Form inputs** — dark, rounded, subtle border.
