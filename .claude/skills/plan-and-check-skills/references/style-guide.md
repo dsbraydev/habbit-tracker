@@ -10,19 +10,31 @@ Derived from the HABITUS design references. This is a hard constraint for any UI
 
 ## Color tokens
 
-Define these as CSS custom properties in Tailwind 4's `@theme` block in `app/globals.css` — never hardcode a color value directly in a component. This is the single place to swap the palette later.
+Defined as CSS custom properties in Tailwind 4's `@theme` block in `app/globals.css` — never hardcode a color value directly in a component. This is the single place to swap the palette later. Current values (purple/violet/blue-fuchsia default, confirmed with the user):
 
-- `--color-bg` — base app background (near-black)
-- `--color-surface` — card/panel background (slightly lighter than bg)
-- `--color-text-primary` / `--color-text-secondary` — high-contrast heading text vs. muted label/caption text
-- `--color-accent-from` / `--color-accent-via` / `--color-accent-to` — the gradient used for progress rings, primary buttons, active nav state, and glow effects. Default: purple → violet → blue/fuchsia (indigo/violet/fuchsia family), the thread consistent across both design references.
-- `--color-success` — completed/checked state (green)
-- `--color-streak` — flame/streak accent (orange)
-- `--color-locked` — locked/inactive state (neutral gray)
+- `--color-bg: #090812` — base app background
+- `--color-surface: #131320` / `--color-surface-hover: #1c1c2e` — card/panel background and its hover state
+- `--color-border: #23233a` — subtle borders on cards/inputs
+- `--color-text-primary: #f5f5f7` / `--color-text-secondary: #9999ad` — high-contrast heading text vs. muted label/caption text
+- `--color-accent-from: #6366f1` / `--color-accent-via: #8b5cf6` / `--color-accent-to: #d946ef` — the gradient used for progress rings, primary buttons, active nav state, and glow effects
+- `--color-success: #22c55e` — completed/checked state
+- `--color-streak: #f97316` — flame/streak accent
+- `--color-locked: #52525b` — locked/inactive state
+
+`--color-bg` must stay in sync with the `themeColor` in `app/layout.tsx`'s `viewport` export — they're two separate places expressing the same value, not derived from each other. Update both together when the palette changes.
+
+**Tailwind 4 notes learned while wiring this up:**
+- Every `--color-*` token in `@theme` automatically gets `bg-`, `text-`, `border-`, `shadow-`, and gradient `from-`/`via-`/`to-` utilities for free — e.g. `shadow-accent-via/50` gives a glow effect directly, no need for arbitrary `theme()` CSS tricks.
+- `bg-gradient-to-r`/`via-*`/`to-*` still work in this project's installed Tailwind (4.3.3) even though v4 introduced `bg-linear-*` naming — no need to switch.
+- Avoid naming a token something that collides with a built-in Tailwind scale name (e.g. don't use `--color-base` — it would collide with the `text-base` font-size utility). This is why the background token is `bg`, not `base`.
 
 ## Typography
 
-Reuse the existing Geist font setup in `app/layout.tsx`. Bold, high-contrast headers for stat numbers (percentages, streak counts); smaller muted labels/captions beneath them.
+Font is **Space Grotesk** (`next/font/google`, wired up in `app/layout.tsx` as the `--font-space-grotesk` variable, mapped to `--font-sans` in `app/globals.css`, applied on `body`). Bold, high-contrast headers for stat numbers (percentages, streak counts); smaller muted labels/captions beneath them.
+
+## Shared utilities
+
+- `lib/cn.ts` exports a `cn()` helper (clsx + tailwind-merge) for conditional/merged classNames — reuse it rather than writing a new one per component.
 
 ## Component patterns
 
@@ -38,13 +50,14 @@ Standardize on these recurring patterns instead of inventing new ones per screen
 - **Primary CTA button** — full-width, gradient fill.
 - **Form inputs** — dark, rounded, subtle border.
 - **Milestone/checklist rows** — trailing check icon (achieved) or lock icon (not yet reached).
+- **Hero background image** (auth-adjacent screens, e.g. Sign In) — statically `import` the asset directly (works from anywhere in the source tree, e.g. `@/assets/images/...` — it does not need to live in `public/`; verified against this Next.js build's own docs, and it still gets full `next/image` optimization: responsive `srcSet`, modern formats, no layout shift). Render at natural aspect ratio (no `fill`/`object-cover` cropping), anchored to the top of the screen. It's fine to scale it up uniformly (e.g. `w-[150%] max-w-none` with `relative left-1/2 -translate-x-1/2` to re-center it) and let the excess get cropped left/right — the page's outer `overflow-hidden` handles that, so it never causes real page overflow. Add a short `bg-gradient-to-t from-bg to-transparent` at the image's bottom edge so it fades into the solid `--color-bg` rather than cutting off sharply.
 
 ## Mobile app-shell rules
 
 This is a Next.js app, but it must feel like a native mobile app, not a responsive website:
 
 - Lock the layout to mobile width. Do not add desktop responsive breakpoints.
-- `viewport-fit=cover` in the viewport meta, with safe-area padding via `env(safe-area-inset-*)` on any edge-anchored chrome (header, bottom nav).
+- `viewport-fit=cover` in the viewport meta, with safe-area padding via `env(safe-area-inset-*)` on any edge-anchored chrome (header, bottom nav). Already wired up as the `viewport` export in `app/layout.tsx` (`viewportFit: "cover"`, `maximumScale: 1`, `userScalable: false`, `colorScheme: "dark"`) — extend that export rather than adding a separate one.
 - App-shell layout: optional fixed header + scrollable content region + fixed bottom tab bar. The content region scrolls; the shell chrome doesn't.
 - Disable overscroll bounce and text-selection/tap-highlight on interactive chrome elements.
 - Minimum 44px touch targets.
