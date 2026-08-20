@@ -20,7 +20,7 @@ type HabitFormValues = {
 
 type HabitFormProps = {
   initialValues?: HabitFormValues;
-  onSubmit: (input: HabitInput) => void;
+  onSubmit: (input: HabitInput) => void | Promise<void>;
 };
 
 const defaultValues: HabitFormValues = {

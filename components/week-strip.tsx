@@ -1,12 +1,12 @@
 import { cn } from "@/lib/cn";
-import type { dummyHistory } from "@/lib/dummy-history";
+import type { HistoryDay } from "@/lib/use-habit-history";
 import type { habitColorThemes } from "@/lib/habit-colors";
 
 const dayLetters = ["S", "M", "T", "W", "T", "F", "S"];
 
 type WeekStripProps = {
-  /** Most-recent-first, e.g. `dummyHistory.slice(0, 7)`. */
-  days: typeof dummyHistory;
+  /** Most-recent-first, e.g. `history.slice(0, 7)`. */
+  days: HistoryDay[];
   /** Filter to one habit's completion, or `null` for the all-habits ratio. */
   habitId: string | null;
   theme: (typeof habitColorThemes)[string];

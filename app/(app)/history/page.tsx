@@ -5,25 +5,28 @@ import { HabitSwitch } from "@/components/habit-switch";
 import { WeekStrip } from "@/components/week-strip";
 import { MonthCalendar } from "@/components/month-calendar";
 import { ProgressChart } from "@/components/progress-chart";
-import { dummyHabits } from "@/lib/dummy-habits";
-import { dummyHistory } from "@/lib/dummy-history";
+import { useHabits } from "@/lib/habits-context";
+import { useHabitHistory } from "@/lib/use-habit-history";
 import { habitColorThemes, defaultColorId } from "@/lib/habit-colors";
 
 export default function HistoryPage() {
   const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null);
+  const { habits } = useHabits();
+  const { history, loading } = useHabitHistory();
 
-  const selectedHabit = dummyHabits.find((habit) => habit.id === selectedHabitId);
+  const selectedHabit = habits.find((habit) => habit.id === selectedHabitId);
   const theme = habitColorThemes[selectedHabit?.colorId ?? defaultColorId];
 
   const chartData = useMemo(() => {
-    return [...dummyHistory].reverse().map((day) => {
+    return [...history].reverse().map((day) => {
       const relevant = selectedHabitId
         ? day.habits.filter((habit) => habit.id === selectedHabitId)
         : day.habits;
       const completed = relevant.filter((habit) => habit.completed).length;
-      return { date: day.date, value: (completed / relevant.length) * 100 };
+      const value = relevant.length ? (completed / relevant.length) * 100 : 0;
+      return { date: day.date, value };
     });
-  }, [selectedHabitId]);
+  }, [history, selectedHabitId]);
 
   return (
     <div className="flex flex-col gap-8 px-6 pt-[max(2rem,env(safe-area-inset-top))]">
@@ -36,26 +39,32 @@ export default function HistoryPage() {
 
       <HabitSwitch value={selectedHabitId} onChange={setSelectedHabitId} />
 
-      <section>
-        <h2 className="mb-3 text-lg font-semibold text-text-primary">This Week</h2>
-        <WeekStrip
-          days={dummyHistory.slice(0, 7)}
-          habitId={selectedHabitId}
-          theme={theme}
-        />
-      </section>
+      {loading ? (
+        <p className="text-sm text-text-secondary">Loading history...</p>
+      ) : (
+        <>
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-text-primary">This Week</h2>
+            <WeekStrip
+              days={history.slice(0, 7)}
+              habitId={selectedHabitId}
+              theme={theme}
+            />
+          </section>
 
-      <section>
-        <h2 className="mb-3 text-lg font-semibold text-text-primary">This Month</h2>
-        <MonthCalendar days={dummyHistory} habitId={selectedHabitId} theme={theme} />
-      </section>
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-text-primary">This Month</h2>
+            <MonthCalendar days={history} habitId={selectedHabitId} theme={theme} />
+          </section>
 
-      <section>
-        <h2 className="mb-3 text-lg font-semibold text-text-primary">
-          All-Time Progress
-        </h2>
-        <ProgressChart data={chartData} cssVar={theme.cssVar} />
-      </section>
+          <section>
+            <h2 className="mb-3 text-lg font-semibold text-text-primary">
+              All-Time Progress
+            </h2>
+            <ProgressChart data={chartData} cssVar={theme.cssVar} />
+          </section>
+        </>
+      )}
     </div>
   );
 }

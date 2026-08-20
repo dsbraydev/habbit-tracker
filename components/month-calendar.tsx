@@ -1,11 +1,11 @@
 import { cn } from "@/lib/cn";
-import type { dummyHistory } from "@/lib/dummy-history";
+import type { HistoryDay } from "@/lib/use-habit-history";
 import type { habitColorThemes } from "@/lib/habit-colors";
 
 const dayLetters = ["S", "M", "T", "W", "T", "F", "S"];
 
 type MonthCalendarProps = {
-  days: typeof dummyHistory;
+  days: HistoryDay[];
   habitId: string | null;
   theme: (typeof habitColorThemes)[string];
 };

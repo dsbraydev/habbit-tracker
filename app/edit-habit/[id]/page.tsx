@@ -20,17 +20,17 @@ export default function EditHabitPage({ params }: EditHabitPageProps) {
 
   const habit = habits.find((item) => item.id === id);
 
-  function handleSubmit(input: HabitInput) {
-    updateHabit(id, input);
+  async function handleSubmit(input: HabitInput) {
+    await updateHabit(id, input);
     router.push("/home");
   }
 
-  function handleDeleteClick() {
+  async function handleDeleteClick() {
     if (!confirmingDelete) {
       setConfirmingDelete(true);
       return;
     }
-    deleteHabit(id);
+    await deleteHabit(id);
     router.push("/home");
   }
 

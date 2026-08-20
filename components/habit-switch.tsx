@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/cn";
-import { dummyHabits } from "@/lib/dummy-habits";
+import { useHabits } from "@/lib/habits-context";
 import { habitColorThemes, defaultColorId } from "@/lib/habit-colors";
 
 type HabitSwitchProps = {
@@ -10,6 +10,8 @@ type HabitSwitchProps = {
 };
 
 export function HabitSwitch({ value, onChange }: HabitSwitchProps) {
+  const { habits } = useHabits();
+
   return (
     <div className="flex gap-2 overflow-x-auto pb-1">
       <button
@@ -25,7 +27,7 @@ export function HabitSwitch({ value, onChange }: HabitSwitchProps) {
       >
         All
       </button>
-      {dummyHabits.map((habit) => {
+      {habits.map((habit) => {
         const selected = value === habit.id;
         const theme = habitColorThemes[habit.colorId];
         return (

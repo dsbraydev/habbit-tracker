@@ -1,18 +1,37 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Dumbbell, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { createClient } from "@/lib/supabase/client";
 import backgroundImage from "@/assets/images/purple-main-background.png";
 
 export default function SignInPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    // Placeholder — real auth wiring comes with the future Supabase integration.
+    setError(null);
+    setIsLoading(true);
+
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      setError(error.message);
+      setIsLoading(false);
+      return;
+    }
+
+    router.push("/home");
+    router.refresh();
   }
 
   return (
@@ -49,6 +68,8 @@ export default function SignInPage() {
             placeholder="Email address"
             autoComplete="email"
             required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
             className="h-14 rounded-2xl border border-border bg-surface/80 px-4 text-text-primary placeholder:text-text-secondary outline-none focus:border-accent-via"
           />
 
@@ -58,6 +79,8 @@ export default function SignInPage() {
               placeholder="Password"
               autoComplete="current-password"
               required
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
               className="h-14 w-full rounded-2xl border border-border bg-surface/80 px-4 pr-12 text-text-primary placeholder:text-text-secondary outline-none focus:border-accent-via"
             />
             <button
@@ -74,22 +97,22 @@ export default function SignInPage() {
             </button>
           </div>
 
-          <Link
-            href="/home"
-            className="self-end text-sm font-medium text-accent-via"
-          >
-            Start Testing
-          </Link>
+          {error && (
+            <p role="alert" className="text-sm text-danger">
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"
+            disabled={isLoading}
             className={cn(
               "mt-2 h-14 rounded-full bg-gradient-to-r from-accent-from via-accent-via to-accent-to",
               "text-base font-semibold text-text-primary shadow-lg shadow-accent-via/40",
-              "transition-opacity active:opacity-90"
+              "transition-opacity active:opacity-90 disabled:opacity-60"
             )}
           >
-            Log In
+            {isLoading ? "Logging in..." : "Log In"}
           </button>
 
           <p className="text-center text-sm text-text-secondary">

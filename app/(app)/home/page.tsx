@@ -13,7 +13,7 @@ function getGreeting() {
 }
 
 export default function HomePage() {
-  const { habits, toggleHabit } = useHabits();
+  const { habits, loading, toggleHabit } = useHabits();
 
   return (
     <div className="flex flex-col gap-6 px-6 pt-[max(2rem,env(safe-area-inset-top))]">
@@ -30,20 +30,28 @@ export default function HomePage() {
         <h2 className="mb-3 text-lg font-semibold text-text-primary">
           Today&apos;s Habits
         </h2>
-        <div className="flex flex-col gap-3">
-          {habits.map((habit) => (
-            <HabitRow
-              key={habit.id}
-              href={`/edit-habit/${habit.id}`}
-              name={habit.name}
-              subtitle={habit.subtitle}
-              icon={habit.icon}
-              badgeClass={habit.badgeClass}
-              completed={habit.completed}
-              onToggle={() => toggleHabit(habit.id)}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <p className="text-sm text-text-secondary">Loading habits...</p>
+        ) : habits.length === 0 ? (
+          <p className="text-sm text-text-secondary">
+            No habits yet — tap + to create your first one.
+          </p>
+        ) : (
+          <div className="flex flex-col gap-3">
+            {habits.map((habit) => (
+              <HabitRow
+                key={habit.id}
+                href={`/edit-habit/${habit.id}`}
+                name={habit.name}
+                subtitle={habit.subtitle}
+                icon={habit.icon}
+                badgeClass={habit.badgeClass}
+                completed={habit.completed}
+                onToggle={() => toggleHabit(habit.id)}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       <Link

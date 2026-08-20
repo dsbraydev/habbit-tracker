@@ -10,8 +10,8 @@ export default function CreateHabitPage() {
   const router = useRouter();
   const { addHabit } = useHabits();
 
-  function handleSubmit(input: HabitInput) {
-    addHabit(input);
+  async function handleSubmit(input: HabitInput) {
+    await addHabit(input);
     router.push("/home");
   }
 
