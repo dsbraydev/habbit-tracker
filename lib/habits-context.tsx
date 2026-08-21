@@ -11,7 +11,7 @@ import {
 } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { iconOptions } from "@/components/icon-picker";
-import { colorOptions } from "@/components/color-picker";
+import { resolveHabitBadgeClass, resolveHabitIcon } from "@/lib/resolve-habit-display";
 
 export type Habit = {
   id: string;
@@ -42,17 +42,6 @@ function todayString() {
   return new Date().toISOString().slice(0, 10);
 }
 
-function resolveIcon(iconId: string) {
-  return iconOptions.find((option) => option.id === iconId)?.icon ?? iconOptions[0].icon;
-}
-
-function resolveBadgeClass(colorId: string) {
-  return (
-    colorOptions.find((option) => option.id === colorId)?.badgeClass ??
-    colorOptions[0].badgeClass
-  );
-}
-
 export function HabitsProvider({ children }: { children: ReactNode }) {
   const [habits, setHabits] = useState<Habit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -80,10 +69,10 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
         id: row.id,
         name: row.name,
         subtitle: row.note,
-        icon: resolveIcon(row.icon_id),
+        icon: resolveHabitIcon(row.icon_id),
         iconId: row.icon_id,
         colorId: row.color_id,
-        badgeClass: resolveBadgeClass(row.color_id),
+        badgeClass: resolveHabitBadgeClass(row.color_id),
         days: row.days ?? [],
         completed: completedIds.has(row.id),
       }));
@@ -104,6 +93,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       const habit = habits.find((item) => item.id === id);
       if (!habit) return;
 
+      const wasCompleted = habit.completed;
       const supabase = createClient();
       const today = todayString();
 
@@ -111,20 +101,39 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
         prev.map((item) => (item.id === id ? { ...item, completed: !item.completed } : item))
       );
 
-      if (habit.completed) {
-        await supabase
+      function revert() {
+        setHabits((prev) =>
+          prev.map((item) => (item.id === id ? { ...item, completed: wasCompleted } : item))
+        );
+      }
+
+      if (wasCompleted) {
+        const { error } = await supabase
           .from("habit_completions")
           .delete()
           .eq("habit_id", id)
           .eq("completed_on", today);
+
+        if (error) {
+          console.error("Failed to unmark habit completion", error);
+          revert();
+        }
       } else {
         const { data: userData } = await supabase.auth.getUser();
-        if (!userData.user) return;
-        await supabase.from("habit_completions").insert({
+        if (!userData.user) {
+          revert();
+          return;
+        }
+        const { error } = await supabase.from("habit_completions").insert({
           habit_id: id,
           user_id: userData.user.id,
           completed_on: today,
         });
+
+        if (error) {
+          console.error("Failed to mark habit completion", error);
+          revert();
+        }
       }
     },
     [habits]
@@ -170,7 +179,7 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
 
   const updateHabit = useCallback(async (id: string, input: HabitInput) => {
     const supabase = createClient();
-    await supabase
+    const { error } = await supabase
       .from("habits")
       .update({
         name: input.name,
@@ -181,6 +190,11 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
       })
       .eq("id", id);
 
+    if (error) {
+      console.error("Failed to update habit", error);
+      return;
+    }
+
     setHabits((prev) =>
       prev.map((habit) => (habit.id === id ? { ...habit, ...input } : habit))
     );
@@ -188,7 +202,13 @@ export function HabitsProvider({ children }: { children: ReactNode }) {
 
   const deleteHabit = useCallback(async (id: string) => {
     const supabase = createClient();
-    await supabase.from("habits").delete().eq("id", id);
+    const { error } = await supabase.from("habits").delete().eq("id", id);
+
+    if (error) {
+      console.error("Failed to delete habit", error);
+      return;
+    }
+
     setHabits((prev) => prev.filter((habit) => habit.id !== id));
   }, []);
 

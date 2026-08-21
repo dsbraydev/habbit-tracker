@@ -7,6 +7,7 @@ import { ColorPicker, colorOptions } from "@/components/color-picker";
 import { DaySelector } from "@/components/day-selector";
 import { cn } from "@/lib/cn";
 import type { HabitInput } from "@/lib/habits-context";
+import { resolveHabitBadgeClass } from "@/lib/resolve-habit-display";
 
 export const HABIT_FORM_ID = "habit-form";
 
@@ -44,9 +45,7 @@ export function HabitForm({ initialValues, onSubmit }: HabitFormProps) {
 
   const SelectedIcon =
     iconOptions.find((option) => option.id === iconId)?.icon ?? iconOptions[0].icon;
-  const badgeClass =
-    colorOptions.find((option) => option.id === colorId)?.badgeClass ??
-    colorOptions[0].badgeClass;
+  const badgeClass = resolveHabitBadgeClass(colorId);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
