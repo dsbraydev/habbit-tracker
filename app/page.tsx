@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { Dumbbell, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -9,7 +8,6 @@ import { createClient } from "@/lib/supabase/client";
 import backgroundImage from "@/assets/images/purple-main-background.png";
 
 export default function SignInPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -30,8 +28,12 @@ export default function SignInPage() {
       return;
     }
 
-    router.push("/home");
-    router.refresh();
+    // Hard navigation rather than router.push(): this forces a fresh
+    // top-level request, so the proxy (lib/supabase/proxy.ts) reliably sees
+    // the just-set session cookie. A client-side push here can race the
+    // cookie write and bounce back to "/" via the proxy's redirect.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.href = "/home";
   }
 
   return (

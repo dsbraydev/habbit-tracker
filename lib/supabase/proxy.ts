@@ -57,6 +57,16 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Mirror of the check above: an already-signed-in user landing on the
+  // sign-in page (this is what happens every time the installed PWA opens,
+  // since manifest.ts sets start_url: "/") should skip straight to the
+  // dashboard instead of seeing the login form again.
+  if (request.nextUrl.pathname === "/" && user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/home";
+    return NextResponse.redirect(url);
+  }
+
   // Must return supabaseResponse as-is (or copy its cookies onto a new
   // response) — otherwise the browser and server can fall out of sync and
   // the user's session ends prematurely.

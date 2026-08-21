@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { Bell, ChevronRight, LogOut, Settings, User } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -12,7 +11,6 @@ const settingsRows = [
 ];
 
 export default function ProfilePage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [loading, setLoading] = useState(true);
@@ -45,8 +43,10 @@ export default function ProfilePage() {
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
+    // Hard navigation, same reasoning as the sign-in redirect: guarantees
+    // the proxy sees the cleared session on a fresh top-level request.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.href = "/";
   }
 
   const initial = (displayName || email || "?").charAt(0).toUpperCase();
