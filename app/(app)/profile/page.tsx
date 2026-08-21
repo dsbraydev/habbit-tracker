@@ -67,21 +67,22 @@ export default function ProfilePage() {
 
       <section className="flex flex-col gap-3">
         {settingsRows.map(({ icon: Icon, label }) => (
-          <div
+          <button
             key={label}
-            className="flex items-center gap-3 rounded-2xl border border-border bg-surface/80 p-4"
+            type="button"
+            className="flex w-full items-center gap-3 rounded-card border border-border bg-surface/80 p-4 text-left transition-colors active:bg-surface-hover"
           >
             <Icon className="h-5 w-5 text-text-secondary" />
             <span className="flex-1 font-medium text-text-primary">{label}</span>
             <ChevronRight className="h-5 w-5 text-text-secondary" />
-          </div>
+          </button>
         ))}
       </section>
 
       <button
         type="button"
         onClick={handleSignOut}
-        className="flex items-center justify-center gap-2 rounded-2xl border border-danger/40 p-4 text-sm font-medium text-danger"
+        className="flex items-center justify-center gap-2 rounded-card border border-danger/40 p-4 text-sm font-medium text-danger transition-transform active:scale-95"
       >
         <LogOut className="h-5 w-5" />
         Sign Out

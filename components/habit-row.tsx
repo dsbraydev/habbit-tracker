@@ -22,9 +22,9 @@ export function HabitRow({
   href,
 }: HabitRowProps) {
   const indicatorClass = cn(
-    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
+    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-150 active:scale-90",
     completed
-      ? "border-accent-via bg-accent-via text-text-primary"
+      ? "border-accent-via bg-accent-via text-text-primary shadow-lg shadow-accent-via/50"
       : "border-border text-transparent"
   );
 
@@ -47,9 +47,12 @@ export function HabitRow({
   );
 
   return (
-    <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface/80 p-4">
+    <div className="flex items-center gap-3 rounded-card border border-border bg-surface/80 p-4">
       {href ? (
-        <Link href={href} className="flex flex-1 items-center gap-3">
+        <Link
+          href={href}
+          className="flex flex-1 items-center gap-3 transition-opacity active:opacity-80"
+        >
           {badge}
           {text}
         </Link>

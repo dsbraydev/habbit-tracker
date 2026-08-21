@@ -15,6 +15,8 @@
   --color-locked: #52525b;
   --color-danger: #ef4444;
   --font-sans: var(--font-space-grotesk);
+  --radius-card: 1.25rem;
+  --bottom-nav-height: 5rem;
 }
 
 body {

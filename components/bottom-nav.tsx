@@ -52,7 +52,7 @@ export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 bg-surface/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
+    <nav className="relative z-20 shrink-0 min-h-[var(--bottom-nav-height)] bg-surface/95 backdrop-blur pb-[env(safe-area-inset-bottom)]">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-accent-via/40 to-transparent" />
       <div className="mx-auto flex max-w-md items-center justify-around px-2 py-2">
         {navItems.map(({ href, label, icon: Icon, activeClass, iconGlowClass }) => {

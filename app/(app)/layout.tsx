@@ -3,8 +3,8 @@ import { BottomNav } from "@/components/bottom-nav";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-dvh flex-col bg-bg">
-      <main className="flex-1 overflow-y-auto pb-[calc(5rem+env(safe-area-inset-bottom))]">
+    <div className="flex h-dvh flex-col overflow-hidden bg-bg">
+      <main className="relative flex-1 overflow-y-auto overscroll-contain pb-6">
         {children}
       </main>
       <BottomNav />

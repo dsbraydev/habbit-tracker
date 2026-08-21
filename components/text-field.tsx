@@ -2,7 +2,7 @@ import { useId, type ComponentPropsWithoutRef } from "react";
 import { cn } from "@/lib/cn";
 
 const fieldClass =
-  "w-full rounded-2xl border border-border bg-surface/80 px-4 py-3 text-text-primary placeholder:text-text-secondary outline-none focus:border-accent-via";
+  "w-full rounded-card border border-border bg-surface/80 px-4 py-3 text-text-primary placeholder:text-text-secondary outline-none transition-all duration-150 focus:border-accent-via focus:shadow-lg focus:shadow-accent-via/40";
 
 type TextFieldProps = {
   label: string;
